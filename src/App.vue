@@ -45,7 +45,7 @@ const produtos = ref([
 <template>
 <header>
   <div class="logo">
-    <img src="" alt="Logo">
+    <img src="https://cdn.shopify.com/s/files/1/0287/4323/7725/files/Everything_You_Should_Know_About_Vinyl_Record_Sizes_2048x2048.jpg?v=1631557061" alt="Logo">
   </div>
   <div class="barraDePesquisa">
     <input type="text" placeholder="Pesquisar">
@@ -81,6 +81,9 @@ header {
 }
 div.logo {
 
+}
+div.logo img {
+  width: 10vw;
 }
 div.cards {
   display: flex;
