@@ -5,10 +5,11 @@ import { ref } from "vue";
 const produtos = ref([
     {
         id: 1,
-        titulo: 'Livro 1',
-        resenha: 'Descrição breve 1',
-        preco: 49.9,
-        capa: 'https://placehold.co/600x400.png',
+        titulo: 'Metallica (Remastered)',
+        resenha: 'The Black Album is one of the most commercially successful and critically acclaimed records of all time, with global sales of over 35 million, and contains a series of unrelenting singles, "Enter Sandman," "The Unforgiven", "Nothing Else Matters,"Wherever I May Roam," and "Sad But True."',
+        preco: 234.40,
+        capa: 'https://m.media-amazon.com/images/I/61Xk1PckmfL._AC_UL320_.jpg',
+        link: "https://www.amazon.com.br/Metallica-Remastered-Disco-Vinil/dp/B097C6KBV8/ref=lp_7791937011_1_9?pf_rd_p=721161a6-b78b-47dc-9717-91545f5eca72&pf_rd_r=M2Q70Y7MAC6TF05FCQTG&sbo=RZvfv%2F%2FHxDF%2BO5021pAnSA%3D%3D&ufe=app_do%3Aamzn1.fos.6a09f7ec-d911-4889-ad70-de8dd83c8a74"
     },
     {
         id: 2,
@@ -39,13 +40,21 @@ const produtos = ref([
         capa: 'https://placehold.co/600x400.png',
     }
 ]);
+    let aleatorioArray = [];
+    let copiaArray = [produtos];
+
+  function numeroArray(produtos.value) {
+    min = Math.ceil(0);
+    max = Math.floor(produtos.value.le);
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
 
 </script>
 
 <template>
 <header>
   <div class="logo">
-    <img src="https://cdn.shopify.com/s/files/1/0287/4323/7725/files/Everything_You_Should_Know_About_Vinyl_Record_Sizes_2048x2048.jpg?v=1631557061" alt="Logo">
+    <p>Vynil Records</p>
   </div>
   <div class="barraDePesquisa">
     <input type="text" placeholder="Pesquisar">
@@ -72,25 +81,71 @@ const produtos = ref([
     <span class="fa-solid fa-user"></span>
   </div>
 </header>
+<hr />
+<main>
+
+<section class="destaque">
+<div class="infoDoDestaque" v-for="(produto, index) in produtos" :key = "index">
+<h2>{{ produto.titulo}}</h2>
+<p>desc</p>
+<button>Acessar página do produto</button>
+</div>
+<div class="imagemDestaque">
+<img src="" alt="">
+</div>
+</section>
+
+<hr />
+</main>
 </template>
 
 <style scoped>
+
+/*Geral*/
+header{
+  margin: 2vw 10vw 3vw 10vw;
+}
+section {
+  margin: 0 5vw 0 5vw;
+}
+footer {
+  margin: 0 5vw 2vw 5vw;
+}
+hr {
+  color: #F85525;
+  text-decoration: none;
+  border: solid;
+  border-width: 0.1vw;
+}
+
+/*CABEÇALHO*/
 header {
   display: flex;
   justify-content: space-between;
+  font-size: 1.2rem;
+  font-weight: 500;
 }
 div.logo {
-
+  display: flex;
 }
-div.logo img {
-  width: 10vw;
+div.barraDePesquisa input {
+  font-size: 1rem;
+}
+div.abas ul{
+  display: flex;
+  justify-content: space-between;
+}
+div.abas ul li {
+  margin-right: 1vw;
+  margin-left: 1vw;
 }
 div.cards {
   display: flex;
   color: #F85525;
 }
-div.cards p {
+div.cards span {
 margin: 0 0.5vw 0 0.5vw;
+font-size: 1.5rem;
 }
 
 </style>
