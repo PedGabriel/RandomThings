@@ -1,58 +1,41 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
-const produtos = ref([
-  {
-    id: 1,
-    titulo: 'Metallica (Remastered)',
-    desc: 'The Black Album is one of the most commercially successful and critically acclaimed records of all time, with global sales of over 35 million, and contains a series of unrelenting singles, "Enter Sandman," "The Unforgiven", "Nothing Else Matters,"Wherever I May Roam," and "Sad But True."',
-    preco: 234.4,
-    capa: 'https://m.media-amazon.com/images/I/61Xk1PckmfL._AC_UL320_.jpg',
-    link: 'https://www.amazon.com.br/Metallica-Remastered-Disco-Vinil/dp/B097C6KBV8/ref=lp_7791937011_1_9?pf_rd_p=721161a6-b78b-47dc-9717-91545f5eca72&pf_rd_r=M2Q70Y7MAC6TF05FCQTG&sbo=RZvfv%2F%2FHxDF%2BO5021pAnSA%3D%3D&ufe=app_do%3Aamzn1.fos.6a09f7ec-d911-4889-ad70-de8dd83c8a74',
-  },
-  {
-    id: 2,
-    titulo: 'Livro 2',
-    desc: 'Descrição breve 2',
-    preco: 99.9,
-    capa: 'https://placehold.co/600x400.png',
-  },
-  {
-    id: 3,
-    titulo: 'Livro 3',
-    desc: 'Descrição breve 3',
-    preco: 9.9,
-    capa: 'https://placehold.co/600x400.png',
-  },
-  {
-    id: 4,
-    titulo: 'Livro 4',
-    desc: 'Descrição breve 4',
-    preco: 199.9,
-    capa: 'https://placehold.co/600x400.png',
-  },
-  {
-    id: 5,
-    titulo: 'Livro 5',
-    desc: 'Descrição breve 5',
-    preco: 29.9,
-    capa: 'https://placehold.co/600x400.png',
-  },
-])
+const produtos = ref([])
+const produtoDestaque = ref({})
 
-let numeroProdutos = ref(produtos.value.length)
-let numeroAleatorio = 0
+const linkFakeStore = 'https://fakestoreapi.com/products'
 
-function numeroArray() {
-  numeroAleatorio = Math.floor(Math.random() * numeroProdutos.value)
+async function buscarProdutos() {
+try {
+  const respostaStore = await fetch(linkFakeStore)
+  const informacoes = await respostaStore.json()
+
+  const aleatorio = informacoes[Math.floor(Math.random() * informacoes.length)];
+  produtoDestaque.value = aleatorio;
+
+  produtos.value = informacoes.map((produto) => ({
+    id: produto.id,
+    titulo: produto.title,
+    desc: produto.description,
+    preco: produto.price,
+    imagem: produto.image,
+    link: '#',
+  }))
+  } catch (error) {
+    console.error('Erro ao buscar produtos:', error);
+  }
 }
-numeroArray()
+onMounted(() => {
+  buscarProdutos()
+})
+
 </script>
 
 <template>
   <header>
     <div class="logo">
-      <p>Vynil Records</p>
+      <p>Random Things</p>
     </div>
     <div class="barraDePesquisa">
       <input type="text" placeholder="Pesquisar" />
@@ -84,19 +67,25 @@ numeroArray()
   <hr />
   <main>
     <section class="destaque">
-      <div class="infoDoDestaque" v-for="(produto, index) in produtos.slice(0, 1)" :key="index">
+      <div class="infoDoDestaque" v-if="produtoDestaque.id">
         <div class="textosDest">
-          <h2>{{ produtos[0].titulo }}</h2>
-          <p>{{ produtos[0].desc }}</p>
-          <button >Acessar página do produto</button>
+          <h2>{{ produtoDestaque.title }}</h2>
+          <p>{{ produtoDestaque.description }}</p>
+          <button>Acessar página do produto</button>
         </div>
         <div class="imagemDestaque">
-          <img :src="produtos[0].capa" alt="" />
+          <img :src="produtoDestaque.image" alt="Imagem do produto em destaque" />
         </div>
       </div>
     </section>
-
     <hr />
+    <section class="produtos">
+      <ul v-for="(produto, index) in produtos" :key="index">
+        <li>
+          {{ produto }}
+        </li>
+      </ul>
+    </section>
   </main>
 </template>
 

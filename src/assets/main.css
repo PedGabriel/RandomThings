@@ -3,6 +3,9 @@
 html {
   background-color: #F6DCAC;
   color: #121619;
+  border: solid;
+  border-width: 0.5vw;
+  border-color: #F85525;
 }
 body {
   font-family: "Quicksand", sans-serif;
