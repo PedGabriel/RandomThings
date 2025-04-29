@@ -18,11 +18,12 @@ async function buscarProdutos() {
       id: produto.id,
       titulo: produto.title,
       desc: produto.description,
-      preco: `$` + produto.price,
+      preco: Number(produto.price),
       imagem: produto.image,
       link: '#',
       favoritado: false,
       comprado: false,
+      quantidade: 1,
     }))
   } catch (error) {
     console.error('Erro ao buscar produtos:', error)
@@ -31,6 +32,44 @@ async function buscarProdutos() {
 onMounted(() => {
   buscarProdutos()
 })
+
+const carrinho = ref([]);
+
+let ativo = ref(false);
+
+function ativarDesetivar() {
+  if (ativo.value == false) {
+    ativo.value = true
+  } else {
+    ativo.value = false
+  }
+  atualizarTotal()
+}
+
+function adicionarCarrinho(item) {
+  carrinho.value.push(item);
+  item.comprado = true;
+}
+function retirarCarrinho(item) {
+  item.comprado = false;
+  carrinho.value.splice(carrinho.value.indexOf(item), 1);
+}
+function verProdutoZerados(item) {
+  if (item.quantidade == 0) {
+    item.comprado = false;
+    carrinho.value.splice(carrinho.value.indexOf(item), 1);
+  }
+}
+
+let total = ref(0);
+
+function atualizarTotal() {
+  for (const produto of carrinho.value) {
+    total.value = 0;
+    total.value = produto.preco * produto.quantidade + total.value;
+  }
+}
+
 </script>
 
 <template>
@@ -56,7 +95,7 @@ onMounted(() => {
       </ul>
     </div>
     <div class="cards">
-      <span class="fa-solid fa-cart-shopping"></span>
+      <span @click="ativarDesetivar()" class="fa-solid fa-cart-shopping"></span>
       <p>|</p>
       <span class="fa-solid fa-heart"></span>
       <p>|</p>
@@ -65,6 +104,7 @@ onMounted(() => {
   </header>
   <hr />
   <main>
+    <div v-if="ativo == false">
     <section class="destaque">
       <div class="infoDoDestaque" v-if="produtoDestaque.id">
         <div class="textosDest">
@@ -83,10 +123,10 @@ onMounted(() => {
         <li>
           <img :src="produto.imagem" alt="Imagem de produto" />
           <h3>{{ produto.titulo }}</h3>
-          <p>{{ produto.preco }}</p>
+          <p>{{ produto.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</p>
           <div class="botaoOutrasAbas">
-            <button class="botaoComprar" v-if="produto.comprado == false" @click="produto.comprado = true">COMPRAR AGORA</button>
-            <button class="botaoComprado" v-else @click="produto.comprado = false">COMPRADO</button>
+            <button class="botaoComprar" v-if="produto.comprado == false" @click="adicionarCarrinho(produto)">COMPRAR AGORA</button>
+            <button class="botaoComprado" v-else @click="retirarCarrinho(produto)">COMPRADO</button>
             <span
               @click="produto.favoritado = true"
               v-if="produto.favoritado == false"
@@ -97,7 +137,49 @@ onMounted(() => {
         </li>
       </ul>
     </section>
+  </div>
+  <section v-else>
+    <h1>Carrinho:</h1>
+    <ul>
+      <li>
+        Produto
+      </li>
+      <li>
+        Quantidade
+      </li>
+      <li>
+        Valor
+      </li>
+    </ul>
+    <ul v-for="(produto, index) in carrinho" :key="index">
+      <li v-if="produto.quantidade > 0">
+        <div class="infosCarrinho">
+          <img :src="produto.imagem" alt="Imagem de produto"/>
+          <div>
+            <h3>{{ produto.titulo }}</h3>
+            <p>{{ produto.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</p>
+          </div>
+        </div>
+        <div class="quantidadesCarrinho">
+          <button @click="produto.quantidade-- && verProdutoZerados(produto)">-</button>
+          <p>{{ produto.quantidade }}</p>
+          <button @click="produto.quantidade++">+</button>
+        </div>
+        <div class="totalProduto">
+          {{ (produto.preco * produto.quantidade).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
+        </div>
+      </li>
+    </ul>
+    <button @click="ativarDesetivar()">Retornar para loja</button>
+    <div class="somaTotal">
+      <p>{{ total }}</p>
+    </div>
+  </section>
+  <hr />
   </main>
+  <footer>
+
+  </footer>
 </template>
 
 <style scoped>
