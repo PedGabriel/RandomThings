@@ -138,9 +138,9 @@ function atualizarTotal() {
       </ul>
     </section>
   </div>
-  <section v-else>
+  <section v-else class="carrinho">
     <h1>Carrinho:</h1>
-    <ul>
+    <ul class="catProdutosComprados">
       <li>
         Produto
       </li>
@@ -152,10 +152,10 @@ function atualizarTotal() {
       </li>
     </ul>
     <ul v-for="(produto, index) in carrinho" :key="index">
-      <li v-if="produto.quantidade > 0">
+      <li v-if="produto.quantidade > 0" class="itensNoCarrinho">
         <div class="infosCarrinho">
           <img :src="produto.imagem" alt="Imagem de produto"/>
-          <div>
+          <div class="nomeEPreco">
             <h3>{{ produto.titulo }}</h3>
             <p>{{ produto.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</p>
           </div>
@@ -170,10 +170,12 @@ function atualizarTotal() {
         </div>
       </li>
     </ul>
-    <button @click="ativarDesetivar()">Retornar para loja</button>
+    <div class="fimCarrinho">
+    <button class="retorno" @click="ativarDesetivar()">Retornar para loja</button>
     <div class="somaTotal">
-      <p>{{ total }}</p>
+      <p>Total da compra: <span>{{ total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</span></p>
     </div>
+  </div>
   </section>
   <hr />
   </main>
@@ -342,4 +344,88 @@ section.produtos div span:hover{
   transform: scale(1.2);
   transition: 0.2s;
 }
+
+/* carrinho de compras*/
+
+section.carrinho ul.catProdutosComprados {
+  display: flex;
+  justify-content: space-between;
+}
+section.carrinho ul.catProdutosComprados li {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-top: 2vw;
+  margin-bottom: 1vw;
+}
+.itensNoCarrinho{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2vw;
+}
+.infosCarrinho {
+  display: flex;
+  align-items: center;
+}
+.infosCarrinho img {
+  width: 100px;
+  height: 150px;
+  object-fit: cover;
+}
+.nomeEPreco {
+  margin-left: 0.3vw;
+}
+.nomeEPreco h3 {
+  font-size: 1.3rem;
+  font-weight: 500;
+  margin-bottom: 0.3vw;
+}
+.quantidadesCarrinho {
+  display: flex;
+  align-items: center;
+  border: #121619 solid 1.5px;
+  padding: 0.5vw 1vw;
+}
+.quantidadesCarrinho button {
+  background-color: #F6DCAC;
+  font-size: 1.3rem;
+  border: none;
+}
+.quantidadesCarrinho button:hover {
+  transform: scale(1.2);
+}
+
+.quantidadesCarrinho p {
+  font-size: 1.3rem;
+  margin-left: 0.2vw;
+  margin-right: 0.2vw;
+}
+.totalProduto {
+  font-weight: 600;
+}
+.fimCarrinho {
+  display: flex;
+  justify-content: space-between;
+}
+button.retorno {
+  margin-right: 1vw;
+  border-color: #121619;
+  border: 1.5px solid;
+  font-weight: 500;
+  font-size: 1.1rem;
+  padding: 0.5vw 0.6vw 0.5vw 0.6vw;
+  background-color: #f85525;
+}
+button.retorno:hover{
+  background-color: #c74721;
+  transform: scale(1.1);
+}
+.somaTotal p {
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+.somaTotal span {
+  font-weight: 600;
+}
+
 </style>
