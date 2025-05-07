@@ -64,8 +64,8 @@ function verProdutoZerados(item) {
 let total = ref(0);
 
 function atualizarTotal() {
+  total.value = 0;
   for (const produto of carrinho.value) {
-    total.value = 0;
     total.value = produto.preco * produto.quantidade + total.value;
   }
 }
@@ -161,9 +161,9 @@ function atualizarTotal() {
           </div>
         </div>
         <div class="quantidadesCarrinho">
-          <button @click="produto.quantidade-- && verProdutoZerados(produto)">-</button>
+          <button @click="produto.quantidade-- && atualizarTotal() && verProdutoZerados(produto)">-</button>
           <p>{{ produto.quantidade }}</p>
-          <button @click="produto.quantidade++">+</button>
+          <button @click="produto.quantidade++ && atualizarTotal()">+</button>
         </div>
         <div class="totalProduto">
           {{ (produto.preco * produto.quantidade).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
@@ -180,7 +180,22 @@ function atualizarTotal() {
   <hr />
   </main>
   <footer>
-
+    <h1>RandomThings</h1>
+    <div class="contato">
+      <h2>Contato:</h2>
+      <ul>
+        <li>
+          <span class="fa-solid fa-phone"></span> <p>+55 (48) 97187-4783</p>
+        </li>
+        <li>
+          <span class="fa-solid fa-clock"></span> <p>7h ás 22h - Segunda a Sexta</p>
+        </li>
+        <li>
+          <span class="fa-solid fa-envelope"></span> <p>coisasaleatorias@gmail.com</p>
+        </li>
+      </ul>
+    </div>
+    <p class="fechamento"> &copy; Alguns direitos reservados. RandomThings 2025.</p>
   </footer>
 </template>
 
@@ -212,9 +227,11 @@ header {
   font-weight: 500;
 }
 h1{
-  margin-right: 4vw;
   font-weight: 600;
   font-size: 1.7rem;
+}
+header h1 {
+  margin-right: 4vw;
 }
 div.barraDePesquisa input {
   font-size: 1.2rem;
@@ -425,6 +442,34 @@ button.retorno:hover{
   font-weight: 500;
 }
 .somaTotal span {
+  font-weight: 600;
+}
+
+
+/*footer*/
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+footer h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5vw;
+}
+footer ul li {
+  display: flex;
+  margin-bottom: 0.5vw;
+}
+footer ul li span {
+  margin: 0.3vw 0.5vw 0 0;
+  color: #f85525;
+}
+footer p.fechamento {
+  display: flex;
+  justify-content: center;
+  margin-top: 2vw;
   font-weight: 600;
 }
 
