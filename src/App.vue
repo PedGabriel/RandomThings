@@ -18,11 +18,12 @@ async function buscarProdutos() {
       id: produto.id,
       titulo: produto.title,
       desc: produto.description,
-      preco: `$` + produto.price,
+      preco: Number(produto.price),
       imagem: produto.image,
       link: '#',
       favoritado: false,
       comprado: false,
+      quantidade: 1,
     }))
   } catch (error) {
     console.error('Erro ao buscar produtos:', error)
@@ -31,6 +32,44 @@ async function buscarProdutos() {
 onMounted(() => {
   buscarProdutos()
 })
+
+const carrinho = ref([]);
+
+let ativo = ref(false);
+
+function ativarDesetivar() {
+  if (ativo.value == false) {
+    ativo.value = true
+  } else {
+    ativo.value = false
+  }
+  atualizarTotal()
+}
+
+function adicionarCarrinho(item) {
+  carrinho.value.push(item);
+  item.comprado = true;
+}
+function retirarCarrinho(item) {
+  item.comprado = false;
+  carrinho.value.splice(carrinho.value.indexOf(item), 1);
+}
+function verProdutoZerados(item) {
+  if (item.quantidade == 0) {
+    item.comprado = false;
+    carrinho.value.splice(carrinho.value.indexOf(item), 1);
+  }
+}
+
+let total = ref(0);
+
+function atualizarTotal() {
+  total.value = 0;
+  for (const produto of carrinho.value) {
+    total.value = produto.preco * produto.quantidade + total.value;
+  }
+}
+
 </script>
 
 <template>
@@ -56,7 +95,7 @@ onMounted(() => {
       </ul>
     </div>
     <div class="cards">
-      <span class="fa-solid fa-cart-shopping"></span>
+      <span @click="ativarDesetivar()" class="fa-solid fa-cart-shopping"></span>
       <p>|</p>
       <span class="fa-solid fa-heart"></span>
       <p>|</p>
@@ -65,6 +104,7 @@ onMounted(() => {
   </header>
   <hr />
   <main>
+    <div v-if="ativo == false">
     <section class="destaque">
       <div class="infoDoDestaque" v-if="produtoDestaque.id">
         <div class="textosDest">
@@ -83,10 +123,10 @@ onMounted(() => {
         <li>
           <img :src="produto.imagem" alt="Imagem de produto" />
           <h3>{{ produto.titulo }}</h3>
-          <p>{{ produto.preco }}</p>
+          <p>{{ produto.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</p>
           <div class="botaoOutrasAbas">
-            <button class="botaoComprar" v-if="produto.comprado == false" @click="produto.comprado = true">COMPRAR AGORA</button>
-            <button class="botaoComprado" v-else @click="produto.comprado = false">COMPRADO</button>
+            <button class="botaoComprar" v-if="produto.comprado == false" @click="adicionarCarrinho(produto)">COMPRAR AGORA</button>
+            <button class="botaoComprado" v-else @click="retirarCarrinho(produto)">COMPRADO</button>
             <span
               @click="produto.favoritado = true"
               v-if="produto.favoritado == false"
@@ -97,7 +137,66 @@ onMounted(() => {
         </li>
       </ul>
     </section>
+  </div>
+  <section v-else class="carrinho">
+    <h1>Carrinho:</h1>
+    <ul class="catProdutosComprados">
+      <li>
+        Produto
+      </li>
+      <li>
+        Quantidade
+      </li>
+      <li>
+        Valor
+      </li>
+    </ul>
+    <ul v-for="(produto, index) in carrinho" :key="index">
+      <li v-if="produto.quantidade > 0" class="itensNoCarrinho">
+        <div class="infosCarrinho">
+          <img :src="produto.imagem" alt="Imagem de produto"/>
+          <div class="nomeEPreco">
+            <h3>{{ produto.titulo }}</h3>
+            <p>{{ produto.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</p>
+          </div>
+        </div>
+        <div class="quantidadesCarrinho">
+          <button @click="produto.quantidade-- && atualizarTotal() && verProdutoZerados(produto)">-</button>
+          <p>{{ produto.quantidade }}</p>
+          <button @click="produto.quantidade++ && atualizarTotal()">+</button>
+        </div>
+        <div class="totalProduto">
+          {{ (produto.preco * produto.quantidade).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
+        </div>
+      </li>
+    </ul>
+    <div class="fimCarrinho">
+    <button class="retorno" @click="ativarDesetivar()">Retornar para loja</button>
+    <div class="somaTotal">
+      <p>Total da compra: <span>{{ total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</span></p>
+    </div>
+  </div>
+  </section>
+  <hr />
   </main>
+  <footer>
+    <h1>RandomThings</h1>
+    <div class="contato">
+      <h2>Contato:</h2>
+      <ul>
+        <li>
+          <span class="fa-solid fa-phone"></span> <p>+55 (48) 97187-4783</p>
+        </li>
+        <li>
+          <span class="fa-solid fa-clock"></span> <p>7h ás 22h - Segunda a Sexta</p>
+        </li>
+        <li>
+          <span class="fa-solid fa-envelope"></span> <p>coisasaleatorias@gmail.com</p>
+        </li>
+      </ul>
+    </div>
+    <p class="fechamento"> &copy; Alguns direitos reservados. RandomThings 2025.</p>
+  </footer>
 </template>
 
 <style scoped>
@@ -128,9 +227,11 @@ header {
   font-weight: 500;
 }
 h1{
-  margin-right: 4vw;
   font-weight: 600;
   font-size: 1.7rem;
+}
+header h1 {
+  margin-right: 4vw;
 }
 div.barraDePesquisa input {
   font-size: 1.2rem;
@@ -260,4 +361,116 @@ section.produtos div span:hover{
   transform: scale(1.2);
   transition: 0.2s;
 }
+
+/* carrinho de compras*/
+
+section.carrinho ul.catProdutosComprados {
+  display: flex;
+  justify-content: space-between;
+}
+section.carrinho ul.catProdutosComprados li {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-top: 2vw;
+  margin-bottom: 1vw;
+}
+.itensNoCarrinho{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2vw;
+}
+.infosCarrinho {
+  display: flex;
+  align-items: center;
+}
+.infosCarrinho img {
+  width: 100px;
+  height: 150px;
+  object-fit: cover;
+}
+.nomeEPreco {
+  margin-left: 0.3vw;
+}
+.nomeEPreco h3 {
+  font-size: 1.3rem;
+  font-weight: 500;
+  margin-bottom: 0.3vw;
+}
+.quantidadesCarrinho {
+  display: flex;
+  align-items: center;
+  border: #121619 solid 1.5px;
+  padding: 0.5vw 1vw;
+}
+.quantidadesCarrinho button {
+  background-color: #F6DCAC;
+  font-size: 1.3rem;
+  border: none;
+}
+.quantidadesCarrinho button:hover {
+  transform: scale(1.2);
+}
+
+.quantidadesCarrinho p {
+  font-size: 1.3rem;
+  margin-left: 0.2vw;
+  margin-right: 0.2vw;
+}
+.totalProduto {
+  font-weight: 600;
+}
+.fimCarrinho {
+  display: flex;
+  justify-content: space-between;
+}
+button.retorno {
+  margin-right: 1vw;
+  border-color: #121619;
+  border: 1.5px solid;
+  font-weight: 500;
+  font-size: 1.1rem;
+  padding: 0.5vw 0.6vw 0.5vw 0.6vw;
+  background-color: #f85525;
+}
+button.retorno:hover{
+  background-color: #c74721;
+  transform: scale(1.1);
+}
+.somaTotal p {
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+.somaTotal span {
+  font-weight: 600;
+}
+
+
+/*footer*/
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+footer h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5vw;
+}
+footer ul li {
+  display: flex;
+  margin-bottom: 0.5vw;
+}
+footer ul li span {
+  margin: 0.3vw 0.5vw 0 0;
+  color: #f85525;
+}
+footer p.fechamento {
+  display: flex;
+  justify-content: center;
+  margin-top: 2vw;
+  font-weight: 600;
+}
+
 </style>
