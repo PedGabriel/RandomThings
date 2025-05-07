@@ -35,6 +35,8 @@ onMounted(() => {
 
 const carrinho = ref([]);
 
+let tempArrayID = ref();
+
 let ativo = ref(false);
 
 function ativarDesetivar() {
@@ -57,7 +59,9 @@ function retirarCarrinho(item) {
 function verProdutoZerados(item) {
   if (item.quantidade == 0) {
     item.comprado = false;
+    tempArrayID.value = item.id;
     carrinho.value.splice(carrinho.value.indexOf(item), 1);
+    produtos.value
   }
 }
 
