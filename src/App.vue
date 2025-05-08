@@ -33,9 +33,14 @@ onMounted(() => {
   buscarProdutos()
 })
 
-const carrinho = ref([]);
 
-let tempArrayID = ref();
+function botaoPaginaDestaque() {
+alert("Eu teria feito algo maneiro aqui mas imaginei que teria que passar por diversos 'Object, object' tentando, então por enquanto não tem nada aqui mesmo. ")
+}
+
+// produtos do carrinho e ativação
+
+const carrinho = ref([]);
 
 let ativo = ref(false);
 
@@ -48,22 +53,35 @@ function ativarDesetivar() {
   atualizarTotal()
 }
 
+
+// modificar produtos do carrinho
+
 function adicionarCarrinho(item) {
   carrinho.value.push(item);
   item.comprado = true;
 }
+
 function retirarCarrinho(item) {
   item.comprado = false;
   carrinho.value.splice(carrinho.value.indexOf(item), 1);
 }
+
+let tempArrayID = ref();
+
 function verProdutoZerados(item) {
   if (item.quantidade == 0) {
-    item.comprado = false;
     tempArrayID.value = item.id;
     carrinho.value.splice(carrinho.value.indexOf(item), 1);
-    produtos.value
+    for (const produto of produtos.value) {
+      if (produto.id === tempArrayID.value) {
+        produto.comprado = false;
+      }
+    }
   }
 }
+
+
+//ver total
 
 let total = ref(0);
 
@@ -73,6 +91,15 @@ function atualizarTotal() {
     total.value = produto.preco * produto.quantidade + total.value;
   }
 }
+
+
+/*funções de resumo*/
+
+function upAndSee(item) {
+  atualizarTotal()
+  verProdutoZerados(item)
+}
+
 
 </script>
 
@@ -114,7 +141,7 @@ function atualizarTotal() {
         <div class="textosDest">
           <h2>{{ produtoDestaque.title }}</h2>
           <p>{{ produtoDestaque.description }}</p>
-          <button>Acessar página do produto</button>
+          <button @click="botaoPaginaDestaque()">Acessar página do produto</button>
         </div>
         <div class="imagemDestaque">
           <img :src="produtoDestaque.image" alt="Imagem do produto em destaque" />
@@ -165,7 +192,7 @@ function atualizarTotal() {
           </div>
         </div>
         <div class="quantidadesCarrinho">
-          <button @click="produto.quantidade-- && atualizarTotal() && verProdutoZerados(produto)">-</button>
+          <button @click="produto.quantidade-- && upAndSee(produto)">-</button>
           <p>{{ produto.quantidade }}</p>
           <button @click="produto.quantidade++ && atualizarTotal()">+</button>
         </div>
@@ -336,6 +363,16 @@ section.produtos img {
 section.produtos h3 {
   margin: 1vw;
   font-weight: 500;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+section.produtos li:hover h3 {
+  max-height: 50px;
+  overflow: auto;
+  white-space: inherit;
+
 }
 section.produtos p {
   margin: 0 1vw 1vw 1vw;
