@@ -33,6 +33,13 @@ onMounted(() => {
   buscarProdutos()
 })
 
+
+function botaoPaginaDestaque() {
+alert("Eu teria feito algo maneiro aqui mas imaginei que teria que passar por diversos 'Object, object' tentando, então por enquanto não tem nada aqui mesmo. ")
+}
+
+// produtos do carrinho e ativação
+
 const carrinho = ref([]);
 
 let ativo = ref(false);
@@ -46,20 +53,36 @@ function ativarDesetivar() {
   atualizarTotal()
 }
 
+
+// modificar produtos do carrinho
+
 function adicionarCarrinho(item) {
   carrinho.value.push(item);
   item.comprado = true;
 }
+
 function retirarCarrinho(item) {
   item.comprado = false;
   carrinho.value.splice(carrinho.value.indexOf(item), 1);
 }
+
+let tempArrayID = ref();
+
 function verProdutoZerados(item) {
   if (item.quantidade == 0) {
-    item.comprado = false;
+    tempArrayID.value = item.id;
     carrinho.value.splice(carrinho.value.indexOf(item), 1);
+    for (const produto of produtos.value) {
+      if (produto.id === tempArrayID.value) {
+        produto.comprado = false;
+        produto.quantidade = 1;
+      }
+    }
   }
 }
+
+
+//ver total
 
 let total = ref(0);
 
@@ -69,6 +92,15 @@ function atualizarTotal() {
     total.value = produto.preco * produto.quantidade + total.value;
   }
 }
+
+
+/*funções de resumo*/
+
+function upAndSee(item) {
+  atualizarTotal()
+  verProdutoZerados(item)
+}
+
 
 </script>
 
@@ -110,7 +142,7 @@ function atualizarTotal() {
         <div class="textosDest">
           <h2>{{ produtoDestaque.title }}</h2>
           <p>{{ produtoDestaque.description }}</p>
-          <button>Acessar página do produto</button>
+          <button @click="botaoPaginaDestaque()">Acessar página do produto</button>
         </div>
         <div class="imagemDestaque">
           <img :src="produtoDestaque.image" alt="Imagem do produto em destaque" />
@@ -138,17 +170,17 @@ function atualizarTotal() {
       </ul>
     </section>
   </div>
-  <section v-else class="carrinho">
+  <section v-else-if="ativo == true && carrinho.length !== 0" class="carrinho">
     <h1>Carrinho:</h1>
     <ul class="catProdutosComprados">
       <li>
-        Produto
+        Produto:
       </li>
-      <li>
-        Quantidade
+      <li class="quantidade">
+        Quantidade:
       </li>
-      <li>
-        Valor
+      <li class="valor">
+        Valor:
       </li>
     </ul>
     <ul v-for="(produto, index) in carrinho" :key="index">
@@ -161,7 +193,7 @@ function atualizarTotal() {
           </div>
         </div>
         <div class="quantidadesCarrinho">
-          <button @click="produto.quantidade-- && atualizarTotal() && verProdutoZerados(produto)">-</button>
+          <button @click="produto.quantidade-- && upAndSee(produto)">-</button>
           <p>{{ produto.quantidade }}</p>
           <button @click="produto.quantidade++ && atualizarTotal()">+</button>
         </div>
@@ -176,6 +208,12 @@ function atualizarTotal() {
       <p>Total da compra: <span>{{ total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</span></p>
     </div>
   </div>
+  </section>
+  <section class="carrinhoVazio" v-else-if="ativo == true && carrinho.length == 0">
+    <div>
+      <p>Adicione novos produtos ao carrinho e eles aparecerão aqui!</p>
+    </div>
+    <button class="retorno" @click="ativarDesetivar()">Retornar para loja</button>
   </section>
   <hr />
   </main>
@@ -228,7 +266,7 @@ header {
 }
 h1{
   font-weight: 600;
-  font-size: 1.7rem;
+  font-size: 2rem;
 }
 header h1 {
   margin-right: 4vw;
@@ -332,6 +370,16 @@ section.produtos img {
 section.produtos h3 {
   margin: 1vw;
   font-weight: 500;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+section.produtos li:hover h3 {
+  max-height: 50px;
+  overflow: auto;
+  white-space: inherit;
+
 }
 section.produtos p {
   margin: 0 1vw 1vw 1vw;
@@ -365,43 +413,59 @@ section.produtos div span:hover{
 /* carrinho de compras*/
 
 section.carrinho ul.catProdutosComprados {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 48.3% 10% 9% 9% 12.5%;
+  grid-row: inherit;
 }
 section.carrinho ul.catProdutosComprados li {
-  font-size: 1.5rem;
+  font-size: 1.7rem;
   font-weight: 500;
   margin-top: 2vw;
-  margin-bottom: 1vw;
+  margin-bottom: 2vw;
+}
+.quantidade{
+  grid-column: 2;
+}
+.valor{
+  grid-column: 6;
 }
 .itensNoCarrinho{
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 50% 5% 10% 10% 12.5%;
+  grid-template-rows: inherit;
   align-items: center;
   margin-bottom: 2vw;
 }
 .infosCarrinho {
   display: flex;
   align-items: center;
+  grid-column: 1;
 }
 .infosCarrinho img {
   width: 100px;
   height: 150px;
   object-fit: cover;
+  border: #3d3d3d 2px solid;
+  margin-right: 0.5vw;
 }
 .nomeEPreco {
   margin-left: 0.3vw;
 }
 .nomeEPreco h3 {
   font-size: 1.3rem;
-  font-weight: 500;
+  font-weight: 600;
   margin-bottom: 0.3vw;
+  max-width: 25vw;
+}
+.nomeEPreco p {
+  color: #f85525;
 }
 .quantidadesCarrinho {
   display: flex;
   align-items: center;
-  border: #121619 solid 1.5px;
+  border: #3d3d3d solid 2px;
   padding: 0.5vw 1vw;
+  grid-column: 2;
 }
 .quantidadesCarrinho button {
   background-color: #F6DCAC;
@@ -411,7 +475,6 @@ section.carrinho ul.catProdutosComprados li {
 .quantidadesCarrinho button:hover {
   transform: scale(1.2);
 }
-
 .quantidadesCarrinho p {
   font-size: 1.3rem;
   margin-left: 0.2vw;
@@ -419,6 +482,7 @@ section.carrinho ul.catProdutosComprados li {
 }
 .totalProduto {
   font-weight: 600;
+  grid-column: 6;
 }
 .fimCarrinho {
   display: flex;
@@ -443,8 +507,26 @@ button.retorno:hover{
 }
 .somaTotal span {
   font-weight: 600;
+  color: #f85525;
 }
 
+/*carrinho vazio*/
+
+section.carrinhoVazio {
+  padding-top: 10vw;
+  padding-bottom: 10vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+section.carrinhoVazio div {
+  margin: auto;
+  font-size: 2rem;
+}
+section.carrinhoVazio button {
+  font-size: 1.8rem;
+  margin: 5vw auto;
+}
 
 /*footer*/
 
@@ -456,7 +538,7 @@ footer {
 footer h2 {
   font-size: 1.5rem;
   font-weight: 600;
-  margin-bottom: 0.5vw;
+  margin-bottom: 1vw;
 }
 footer ul li {
   display: flex;
