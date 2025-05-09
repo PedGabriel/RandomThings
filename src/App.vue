@@ -75,6 +75,7 @@ function verProdutoZerados(item) {
     for (const produto of produtos.value) {
       if (produto.id === tempArrayID.value) {
         produto.comprado = false;
+        produto.quantidade = 1;
       }
     }
   }
@@ -169,17 +170,17 @@ function upAndSee(item) {
       </ul>
     </section>
   </div>
-  <section v-else class="carrinho">
+  <section v-else-if="ativo == true && carrinho.length !== 0" class="carrinho">
     <h1>Carrinho:</h1>
     <ul class="catProdutosComprados">
       <li>
-        Produto
+        Produto:
       </li>
-      <li>
-        Quantidade
+      <li class="quantidade">
+        Quantidade:
       </li>
-      <li>
-        Valor
+      <li class="valor">
+        Valor:
       </li>
     </ul>
     <ul v-for="(produto, index) in carrinho" :key="index">
@@ -207,6 +208,12 @@ function upAndSee(item) {
       <p>Total da compra: <span>{{ total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</span></p>
     </div>
   </div>
+  </section>
+  <section class="carrinhoVazio" v-else-if="ativo == true && carrinho.length == 0">
+    <div>
+      <p>Adicione novos produtos ao carrinho e eles aparecerão aqui!</p>
+    </div>
+    <button class="retorno" @click="ativarDesetivar()">Retornar para loja</button>
   </section>
   <hr />
   </main>
@@ -259,7 +266,7 @@ header {
 }
 h1{
   font-weight: 600;
-  font-size: 1.7rem;
+  font-size: 2rem;
 }
 header h1 {
   margin-right: 4vw;
@@ -406,43 +413,59 @@ section.produtos div span:hover{
 /* carrinho de compras*/
 
 section.carrinho ul.catProdutosComprados {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 48.3% 10% 9% 9% 12.5%;
+  grid-row: inherit;
 }
 section.carrinho ul.catProdutosComprados li {
-  font-size: 1.5rem;
+  font-size: 1.7rem;
   font-weight: 500;
   margin-top: 2vw;
-  margin-bottom: 1vw;
+  margin-bottom: 2vw;
+}
+.quantidade{
+  grid-column: 2;
+}
+.valor{
+  grid-column: 6;
 }
 .itensNoCarrinho{
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 50% 5% 10% 10% 12.5%;
+  grid-template-rows: inherit;
   align-items: center;
   margin-bottom: 2vw;
 }
 .infosCarrinho {
   display: flex;
   align-items: center;
+  grid-column: 1;
 }
 .infosCarrinho img {
   width: 100px;
   height: 150px;
   object-fit: cover;
+  border: #3d3d3d 2px solid;
+  margin-right: 0.5vw;
 }
 .nomeEPreco {
   margin-left: 0.3vw;
 }
 .nomeEPreco h3 {
   font-size: 1.3rem;
-  font-weight: 500;
+  font-weight: 600;
   margin-bottom: 0.3vw;
+  max-width: 25vw;
+}
+.nomeEPreco p {
+  color: #f85525;
 }
 .quantidadesCarrinho {
   display: flex;
   align-items: center;
-  border: #121619 solid 1.5px;
+  border: #3d3d3d solid 2px;
   padding: 0.5vw 1vw;
+  grid-column: 2;
 }
 .quantidadesCarrinho button {
   background-color: #F6DCAC;
@@ -452,7 +475,6 @@ section.carrinho ul.catProdutosComprados li {
 .quantidadesCarrinho button:hover {
   transform: scale(1.2);
 }
-
 .quantidadesCarrinho p {
   font-size: 1.3rem;
   margin-left: 0.2vw;
@@ -460,6 +482,7 @@ section.carrinho ul.catProdutosComprados li {
 }
 .totalProduto {
   font-weight: 600;
+  grid-column: 6;
 }
 .fimCarrinho {
   display: flex;
@@ -484,8 +507,26 @@ button.retorno:hover{
 }
 .somaTotal span {
   font-weight: 600;
+  color: #f85525;
 }
 
+/*carrinho vazio*/
+
+section.carrinhoVazio {
+  padding-top: 10vw;
+  padding-bottom: 10vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+section.carrinhoVazio div {
+  margin: auto;
+  font-size: 2rem;
+}
+section.carrinhoVazio button {
+  font-size: 1.8rem;
+  margin: 5vw auto;
+}
 
 /*footer*/
 
@@ -497,7 +538,7 @@ footer {
 footer h2 {
   font-size: 1.5rem;
   font-weight: 600;
-  margin-bottom: 0.5vw;
+  margin-bottom: 1vw;
 }
 footer ul li {
   display: flex;
