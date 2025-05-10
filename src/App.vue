@@ -243,7 +243,7 @@ header {
   margin: 2vw 10vw 3vw 10vw;
 }
 section {
-  margin: 0 5vw 0 5vw;
+  margin: 3vw 5vw;
 }
 footer {
   margin: 0 5vw 2vw 5vw;
@@ -412,9 +412,13 @@ section.produtos div span:hover{
 
 /* carrinho de compras*/
 
+section.carrinho{
+
+}
+
 section.carrinho ul.catProdutosComprados {
   display: grid;
-  grid-template-columns: 48.3% 10% 9% 9% 12.5%;
+  grid-template-columns: 46% 10% 10% 10% 12%;
   grid-row: inherit;
 }
 section.carrinho ul.catProdutosComprados li {
@@ -464,7 +468,7 @@ section.carrinho ul.catProdutosComprados li {
   display: flex;
   align-items: center;
   border: #3d3d3d solid 2px;
-  padding: 0.5vw 1vw;
+  padding: 0.5vw;
   grid-column: 2;
 }
 .quantidadesCarrinho button {
