@@ -412,13 +412,9 @@ section.produtos div span:hover{
 
 /* carrinho de compras*/
 
-section.carrinho{
-
-}
-
 section.carrinho ul.catProdutosComprados {
   display: grid;
-  grid-template-columns: 46% 10% 10% 10% 12%;
+  grid-template-columns: 46.8% 10% 10% 10% 11.3%;
   grid-row: inherit;
 }
 section.carrinho ul.catProdutosComprados li {
@@ -466,9 +462,10 @@ section.carrinho ul.catProdutosComprados li {
 }
 .quantidadesCarrinho {
   display: flex;
+  justify-content: center;
   align-items: center;
   border: #3d3d3d solid 2px;
-  padding: 0.5vw;
+  padding: 1vw 2.8vw 1vw 3vw;
   grid-column: 2;
 }
 .quantidadesCarrinho button {
