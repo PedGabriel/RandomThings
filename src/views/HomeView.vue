@@ -1,5 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+
+import DestaqueComponent from '../components/destaqueComponent.vue';
+
+
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
 const produtos = ref([])
@@ -105,9 +109,8 @@ function upAndSee(item) {
 
 const router = useRouter();
 
-function openBook(id, produto) {
+function openBook(id) {
   router.push({ name: 'Book', params: { id } })
-  router.push({ name: 'Book', params: { produto } })
 }
 
 </script>
@@ -116,22 +119,16 @@ function openBook(id, produto) {
   <hr />
   <main>
     <div v-if="ativo == false">
-    <section class="destaque">
-      <div class="infoDoDestaque" v-if="produtoDestaque.id">
-        <div class="textosDest">
-          <h2>{{ produtoDestaque.title }}</h2>
-          <p>{{ produtoDestaque.description }}</p>
-          <button @click="botaoPaginaDestaque()">Acessar página do produto</button>
-        </div>
-        <div class="imagemDestaque">
-          <img :src="produtoDestaque.image" alt="Imagem do produto em destaque" />
-        </div>
-      </div>
-    </section>
+
+      <DestaqueComponent
+      @clickDestaque = "botaoPaginaDestaque()"
+      :produtoDestaque = "produtoDestaque.value"
+      />
+
     <hr />
     <section class="produtos">
       <ul v-for="(produto, index) in produtos" :key="index">
-        <li @click="openBook(produto.id, produto)">
+        <li @click="openBook(produto.id)">
           <img :src="produto.imagem" alt="Imagem de produto" />
           <h3>{{ produto.titulo }}</h3>
           <p>{{ produto.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</p>

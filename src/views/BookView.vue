@@ -1,5 +1,5 @@
 <script setup>
-defineProps(['id', 'produto'])
+defineProps(['id'])
 </script>
 <template>
   <h1>{{ produto.titulo }}</h1>
