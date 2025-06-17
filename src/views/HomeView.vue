@@ -1,5 +1,6 @@
 <script setup>
 
+import ProdutosComponent from '@/components/produtosComponent.vue';
 import DestaqueComponent from '../components/destaqueComponent.vue';
 
 
@@ -121,30 +122,16 @@ function openBook(id) {
     <div v-if="ativo == false">
 
       <DestaqueComponent
-      @clickDestaque = "botaoPaginaDestaque()"
-      :produtoDestaque = "produtoDestaque.value"
+      @click-destaque="botaoPaginaDestaque"
       />
 
-    <hr />
-    <section class="produtos">
-      <ul v-for="(produto, index) in produtos" :key="index">
-        <li @click="openBook(produto.id)">
-          <img :src="produto.imagem" alt="Imagem de produto" />
-          <h3>{{ produto.titulo }}</h3>
-          <p>{{ produto.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</p>
-          <div class="botaoOutrasAbas">
-            <button class="botaoComprar" v-if="produto.comprado == false" @click="adicionarCarrinho(produto)">COMPRAR AGORA</button>
-            <button class="botaoComprado" v-else @click="retirarCarrinho(produto)">COMPRADO</button>
-            <span
-              @click="produto.favoritado = true"
-              v-if="produto.favoritado == false"
-              class="fa-regular fa-heart"
-            ></span>
-            <span @click="produto.favoritado = false" v-else class="fa-solid fa-heart"></span>
-          </div>
-        </li>
-      </ul>
-    </section>
+  <hr />
+      <ProdutosComponent
+      :produtos = "produtos"
+      @retirar="retirarCarrinho"
+      @adicionar="adicionarCarrinho"
+      @open-book="openBook"
+      />
   </div>
   <section v-else-if="ativo == true && carrinho.length !== 0" class="carrinho">
     <h1>Carrinho:</h1>
